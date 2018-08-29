@@ -1,0 +1,4 @@
+GET https://ssl-api.openfoodfacts.org/api/v0.1/product/5053990123742.json
+Accept: application/json
+
+###

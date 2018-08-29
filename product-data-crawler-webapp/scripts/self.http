@@ -1,0 +1,4 @@
+GET http://localhost:8000/api/v1/openfoodfacts-product?gtin=5053990123742
+Accept: application/json
+
+###
