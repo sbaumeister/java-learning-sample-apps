@@ -1,4 +1,4 @@
-package io.github.sbaumeister.productcrawler.clients.openfoodfacts;
+package io.github.sbaumeister.productcrawler.service.openfoodfacts;
 
 public class ProductMessage {
 

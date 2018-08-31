@@ -1,8 +1,9 @@
-package io.github.sbaumeister.productcrawler.clients.openfoodfacts;
+package io.github.sbaumeister.productcrawler.service.openfoodfacts;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import org.springframework.stereotype.Service;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -10,6 +11,7 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 
 import java.io.IOException;
 
+@Service
 public class OpenFoodFactsClient {
 
     private static final String BASE_URL = "https://ssl-api.openfoodfacts.org/api/v0.1/";

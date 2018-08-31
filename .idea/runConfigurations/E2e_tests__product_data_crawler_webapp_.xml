@@ -1,0 +1,15 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="E2e tests (product-data-crawler-webapp)" type="JUnit" factoryName="JUnit">
+    <module name="product-data-crawler-webapp" />
+    <option name="MAIN_CLASS_NAME" value="" />
+    <option name="METHOD_NAME" value="" />
+    <option name="TEST_OBJECT" value="tags" />
+    <option name="VM_PARAMETERS" value="-ea -Dwebdriver.chrome.driver=&quot;D:\\Apps\\chromedriver\\chromedriver.exe&quot;" />
+    <option name="PARAMETERS" value="" />
+    <category value="io.github.sbaumeister.productcrawler.testutils.E2eTest" />
+    <tag value="e2e" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
