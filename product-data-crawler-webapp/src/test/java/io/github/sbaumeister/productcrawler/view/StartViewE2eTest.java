@@ -42,7 +42,7 @@ class StartViewE2eTest {
     }
 
     @Test
-    @DisplayName("Assert product list contains at least one item after GTIN search")
+    @DisplayName("Verify that product list contains at least one item after GTIN search")
     void testSearchBehaviour() {
         chromeDriver.navigate().to(baseUrl);
         WebDriverWait wait = new WebDriverWait(chromeDriver, 10);

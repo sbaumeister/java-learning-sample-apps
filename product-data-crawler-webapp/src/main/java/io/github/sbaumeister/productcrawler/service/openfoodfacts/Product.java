@@ -4,7 +4,8 @@ public class Product {
 
     private String productName;
     private String brands;
-    private String imageNutritionUrl;
+    private String imageSmallUrl;
+    private String code;
 
     public String getProductName() {
         return productName;
@@ -22,11 +23,19 @@ public class Product {
         this.brands = brands;
     }
 
-    public String getImageNutritionUrl() {
-        return imageNutritionUrl;
+    public String getImageSmallUrl() {
+        return imageSmallUrl;
     }
 
-    public void setImageNutritionUrl(String imageNutritionUrl) {
-        this.imageNutritionUrl = imageNutritionUrl;
+    public void setImageSmallUrl(String imageSmallUrl) {
+        this.imageSmallUrl = imageSmallUrl;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }

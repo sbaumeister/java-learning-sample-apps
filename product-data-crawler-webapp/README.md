@@ -9,3 +9,10 @@ Key technologies
 - Vaadin 10.x
 - JUnit 5
 - Selenium with ChromeDriver
+
+Open Food Facts API
+-------------------
+- [General API Documentation](https://en.wiki.openfoodfacts.org/API)
+- [Read API Documentation](https://en.wiki.openfoodfacts.org/API/Read)
+- [Product field reference](https://world.openfoodfacts.org/data/data-fields.txt)
+- [Product Java class from Android app](https://github.com/openfoodfacts/openfoodfacts-androidapp/blob/master/app/src/main/java/openfoodfacts/github/scrachx/openfood/models/Product.java)

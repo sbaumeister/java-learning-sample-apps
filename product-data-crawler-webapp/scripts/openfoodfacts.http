@@ -2,3 +2,8 @@ GET https://ssl-api.openfoodfacts.org/api/v0.1/product/5053990123742.json
 Accept: application/json
 
 ###
+
+GET https://ssl-api.openfoodfacts.org/api/v0.1/product/5053990123742.json?fields=product_name,brands
+Accept: application/json
+
+###
