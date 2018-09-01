@@ -1,6 +1,8 @@
 package io.github.sbaumeister.productcrawler.view;
 
 import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.HtmlImport;
@@ -26,6 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Push
@@ -36,11 +40,12 @@ public class StartView extends VerticalLayout implements HasUrlParameter<String>
     private static final Logger LOG = LoggerFactory.getLogger(StartView.class);
 
     private Button searchButton;
-    private TextField gtinTextField;
+    private TextField searchTextField;
     private ProgressBar progressBar;
     private OpenFoodFactsClient openFoodFactsClient;
-    private String gtinParam;
+    private String searchTermParam;
     private Notification productNotFoundNotification;
+    private Div searchResultContainer;
 
     @Autowired
     public StartView(OpenFoodFactsClient openFoodFactsClient) {
@@ -49,40 +54,51 @@ public class StartView extends VerticalLayout implements HasUrlParameter<String>
 
     @Override
     public void setParameter(BeforeEvent event, @OptionalParameter String parameter) {
-        gtinParam = parameter;
+        searchTermParam = parameter;
     }
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
         setId("start-view");
         setClassName("app-view");
+        UI ui = attachEvent.getUI();
 
         H1 heading = new H1("Product Data Crawler");
         add(heading);
 
         HorizontalLayout horizontalLayout = new HorizontalLayout();
-        gtinTextField = new TextField();
-        gtinTextField.setId("search-input");
-        gtinTextField.setMaxLength(13);
-        gtinTextField.setPlaceholder("Enter a GTIN/EAN...");
-
-        progressBar = new ProgressBar();
+        searchTextField = new TextField();
+        searchTextField.setId("search-input");
+        searchTextField.setMaxLength(13);
+        searchTextField.setPlaceholder("Enter a GTIN/EAN or product name...");
+        searchTextField.addKeyPressListener(event -> {
+            if (event.getKey().matches("Enter")) {
+                startAsyncSearch(ui);
+            }
+        });
 
         searchButton = new Button("Search");
         searchButton.setId("search-button");
-        UI ui = attachEvent.getUI();
         searchButton.addClickListener(event -> startAsyncSearch(ui));
 
-        horizontalLayout.add(gtinTextField, searchButton);
+        horizontalLayout.add(searchTextField, searchButton);
+        horizontalLayout.setWidth("100%");
+        horizontalLayout.setFlexGrow(0, searchButton);
+        horizontalLayout.setFlexGrow(1, searchTextField);
 
         add(horizontalLayout);
 
+        progressBar = new ProgressBar();
         add(progressBar);
+
+        searchResultContainer = new Div();
+        searchResultContainer.setId("search-result-container");
+        add(searchResultContainer);
 
         productNotFoundNotification = new Notification("Product not found", 3000, Position.MIDDLE);
 
-        if (gtinParam != null) {
-            gtinTextField.setValue(gtinParam);
+        if (searchTermParam != null) {
+            searchTextField.setValue(searchTermParam);
             startAsyncSearch(ui);
         }
     }
@@ -93,15 +109,23 @@ public class StartView extends VerticalLayout implements HasUrlParameter<String>
     }
 
     private Thread createFetchDataThread(UI ui) {
-        String gtin = gtinTextField.getValue();
+        String searchTerm = searchTextField.getValue();
         return new Thread(() -> {
             ui.access(() -> progressBar.setIndeterminate(true));
 
-            Optional<Product> optionalProduct = openFoodFactsClient.getProduct(gtin);
+            List<Product> foundProducts = new ArrayList<>();
+            if (searchTerm.matches("[0-9]{13}")) {
+                Optional<Product> optionalProduct = openFoodFactsClient.getProductByGtin(searchTerm);
+                if (optionalProduct.isPresent()) {
+                    foundProducts.add(optionalProduct.get());
+                }
+            } else {
+                foundProducts.addAll(openFoodFactsClient.getProductsByName(searchTerm));
+            }
 
             ui.access(() -> {
-                if (optionalProduct.isPresent() && optionalProduct.get().getCode().length() > 0) {
-                    addSearchItem(optionalProduct.get());
+                if (foundProducts.size() > 0) {
+                    addSearchResultItems(foundProducts);
                 } else {
                     productNotFoundNotification.open();
                 }
@@ -110,14 +134,24 @@ public class StartView extends VerticalLayout implements HasUrlParameter<String>
         });
     }
 
-    private void addSearchItem(Product product) {
-        Div searchItem = new Div();
-        searchItem.setClassName("product-item");
+    private void addSearchResultItems(List<Product> foundProducts) {
+        searchResultContainer.removeAll();
+        for (Product foundProduct : foundProducts) {
+            Component searchResultItem = createSearchResultItem(foundProduct);
+            searchResultContainer.add(searchResultItem);
+        }
+    }
+
+    private Component createSearchResultItem(Product product) {
+        Div searchResultItem = new Div();
+        searchResultItem.setClassName("search-result-item");
         H3 productNameHeading = new H3(product.getProductName());
-        searchItem.add(productNameHeading);
+        searchResultItem.add(productNameHeading);
         HorizontalLayout horizontalLayout = new HorizontalLayout();
-        Image image = new Image(product.getImageSmallUrl(), "No product image available");
-        horizontalLayout.add(image);
+        if (product.getImageSmallUrl() != null) {
+            Image image = new Image(product.getImageSmallUrl(), "No product image available");
+            horizontalLayout.add(image);
+        }
         FormLayout formLayout = new FormLayout();
         TextField codeField = new TextField("EAN/GTIN", product.getCode(), "");
         codeField.setReadOnly(true);
@@ -125,8 +159,7 @@ public class StartView extends VerticalLayout implements HasUrlParameter<String>
         brandsField.setReadOnly(true);
         formLayout.add(codeField, brandsField);
         horizontalLayout.add(formLayout);
-        searchItem.add(horizontalLayout);
-//        add(searchItem);
-        getElement().insertChild(3, searchItem.getElement());
+        searchResultItem.add(horizontalLayout);
+        return searchResultItem;
     }
 }

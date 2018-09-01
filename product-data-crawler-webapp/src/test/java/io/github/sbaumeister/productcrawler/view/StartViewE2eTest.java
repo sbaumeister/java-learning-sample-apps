@@ -52,7 +52,7 @@ class StartViewE2eTest {
         input.sendKeys("5053990123742");
         button.click();
 
-        List<WebElement> productItems = wait.until(presenceOfAllElementsLocatedBy(By.className("product-item")));
+        List<WebElement> productItems = wait.until(presenceOfAllElementsLocatedBy(By.className("search-result-item")));
         assertTrue(productItems.size() > 0);
     }
 }

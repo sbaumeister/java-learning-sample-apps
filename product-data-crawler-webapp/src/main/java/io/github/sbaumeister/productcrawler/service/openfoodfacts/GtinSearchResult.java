@@ -1,6 +1,6 @@
 package io.github.sbaumeister.productcrawler.service.openfoodfacts;
 
-public class ProductMessage {
+class GtinSearchResult {
 
     private String code;
     private String status;
